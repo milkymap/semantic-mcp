@@ -24,3 +24,7 @@ wheels/
 
 # Data
 offloaded_data/
+
+
+.claude/
+.mcp.json
