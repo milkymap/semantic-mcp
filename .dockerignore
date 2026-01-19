@@ -1,0 +1,32 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.py[cod]
+*.pyo
+.venv
+.pytest_cache
+*.egg-info
+
+# Environment
+.env
+.env.local
+
+# IDE
+.idea
+.vscode
+*.swp
+
+# Claude
+.claude
+
+# Tests
+tests
+htmlcov
+.coverage
+
+# Other
+*.md
+!README.md

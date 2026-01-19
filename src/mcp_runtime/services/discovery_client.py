@@ -45,11 +45,17 @@ class DiscoveryClient:
         query: str,
         limit: int = 10,
         min_score: float = 0.7,
-        server_names: Optional[List[str]] = None
+        server_names: Optional[List[str]] = None,
+        tool_type: Optional[str] = None,
+        enabled: Optional[bool] = True
     ) -> dict:
         payload = {"query": query, "limit": limit, "min_score": min_score}
         if server_names:
             payload["server_names"] = server_names
+        if tool_type:
+            payload["type"] = tool_type
+        if enabled is not None:
+            payload["enabled"] = enabled
 
         response = await self.client.post(
             f"{self.base_url}/api/mcp/tools/search",
@@ -110,13 +116,7 @@ class DiscoveryClient:
             headers=self._auth_headers()
         )
         response.raise_for_status()
-        data = response.json()
-        return ToolInfo(
-            tool_name=data["tool_name"],
-            tool_description=data["tool_description"],
-            tool_schema=data.get("tool_schema", {}),
-            server_name=data["server_name"]
-        )
+        return ToolInfo(**response.json())
 
     async def list_servers(self, limit: int = 50, offset: int = 0) -> dict:
         response = await self.client.get(

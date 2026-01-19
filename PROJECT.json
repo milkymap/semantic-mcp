@@ -1,0 +1,68 @@
+{
+  "name": "mcp_runtime",
+  "version": "0.1.0",
+  "description": "Execution and lifecycle management layer for MCP servers - connects to mcp_index for discovery, dynamically starts/stops servers, routes tool calls via ZeroMQ",
+  "status": "production-ready",
+  "features": [
+    {
+      "id": 1,
+      "description": "Core RuntimeEngine with server lifecycle management",
+      "status": "complete",
+      "priority": 1
+    },
+    {
+      "id": 2,
+      "description": "DiscoveryClient integration with mcp_index API",
+      "status": "complete",
+      "priority": 1
+    },
+    {
+      "id": 3,
+      "description": "MCP server exposure via FastMCP (search, manage, execute tools)",
+      "status": "complete",
+      "priority": 1
+    },
+    {
+      "id": 4,
+      "description": "Background task execution with priority queue",
+      "status": "complete",
+      "priority": 2
+    },
+    {
+      "id": 5,
+      "description": "Content manager for large response offloading",
+      "status": "complete",
+      "priority": 2
+    },
+    {
+      "id": 6,
+      "description": "API field mapping alignment with mcp_index OpenAPI spec",
+      "status": "complete",
+      "priority": 1
+    },
+    {
+      "id": 7,
+      "description": "npm stdout silencing for clean stdio transport",
+      "status": "complete",
+      "priority": 1
+    }
+  ],
+  "tested": {
+    "search_tools": "passing",
+    "search_servers": "passing",
+    "get_server_info": "passing",
+    "get_tool_details": "passing",
+    "get_server_tools": "passing",
+    "list_servers": "passing",
+    "manage_server": "passing",
+    "execute_tool": "passing",
+    "list_running_servers": "passing",
+    "poll_task_result": "passing",
+    "get_content": "passing",
+    "get_statistics": "passing"
+  },
+  "quality_notes": "Semantic search quality excellent - multilingual (FR/EN), typo-tolerant, synonym-aware, handles negation and abstract concepts",
+  "dependencies": {
+    "mcp_index": "localhost:8000 (discovery service)"
+  }
+}

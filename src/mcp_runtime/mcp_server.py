@@ -129,14 +129,27 @@ async def search_tools(
     query: str,
     limit: int = 10,
     min_score: float = 0.3,
-    server_names: Optional[List[str]] = None
+    server_names: Optional[List[str]] = None,
+    tool_type: Optional[str] = None,
+    enabled: Optional[bool] = True
 ) -> Dict[str, Any]:
-    """Search for tools using natural language query. Returns lightweight results without schemas. Use get_tool_details for full schema."""
+    """Search for tools using natural language query. Returns lightweight results without schemas. Use get_tool_details for full schema.
+
+    Args:
+        query: Natural language search query
+        limit: Maximum number of results (default: 10)
+        min_score: Minimum similarity score 0.0-1.0 (default: 0.3)
+        server_names: Filter tools by server names
+        tool_type: Filter by type: 'app', 'mcp', 'custom', 'base'
+        enabled: Filter by enabled status (default: True, only enabled tools)
+    """
     result = await runtime_engine.discovery_client.search_tools(
         query=query,
         limit=limit,
         min_score=min_score,
-        server_names=server_names
+        server_names=server_names,
+        tool_type=tool_type,
+        enabled=enabled
     )
     if "tools" in result:
         result["tools"] = _strip_tool_schema(result["tools"])

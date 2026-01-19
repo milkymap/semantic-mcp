@@ -151,10 +151,18 @@ class RuntimeEngine:
                 read, write, _ = transport
             else:
                 logger.info(f"[{server_name}] Starting via stdio: {config.command}")
+                # Merge config env with npm-silencing variables to prevent
+                # npm/npx from polluting stdout with non-JSON-RPC messages
+                server_env = {
+                    **config.env,
+                    "NPM_CONFIG_LOGLEVEL": "silent",
+                    "npm_config_progress": "false",
+                    "NO_UPDATE_NOTIFIER": "true",
+                }
                 server_params = StdioServerParameters(
                     command=config.command,
                     args=config.args,
-                    env=config.env
+                    env=server_env
                 )
                 transport = await stack.enter_async_context(stdio_client(server=server_params))
                 read, write = transport
