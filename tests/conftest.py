@@ -1,8 +1,8 @@
 import pytest
 from unittest.mock import AsyncMock
 
-from mcp_runtime.settings import RuntimeSettings
-from mcp_runtime.services.discovery_client import DiscoveryClient
+from mcpruntime.settings import RuntimeSettings
+from mcpruntime.services.discovery_client import DiscoveryClient
 
 
 @pytest.fixture

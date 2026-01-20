@@ -2,7 +2,7 @@ import pytest
 import tempfile
 from pathlib import Path
 
-from mcp_runtime.services.content_manager import ContentManager
+from mcpruntime.services.content_manager import ContentManager
 
 
 @pytest.mark.asyncio

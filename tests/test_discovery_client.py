@@ -2,7 +2,7 @@ import pytest
 import respx
 from httpx import Response
 
-from mcp_runtime.services.discovery_client import DiscoveryClient
+from mcpruntime.services.discovery_client import DiscoveryClient
 
 
 @pytest.mark.asyncio

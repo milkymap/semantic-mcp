@@ -4,14 +4,14 @@ MCP execution runtime with lifecycle management for MCP servers.
 
 ## Overview
 
-`mcp_runtime` is a FastMCP-based MCP server that provides execution and lifecycle management for other MCP servers. It connects to `mcp_index` for discovery and manages server lifecycles locally via ZMQ-based IPC.
+`mcpruntime` is a FastMCP-based MCP server that provides execution and lifecycle management for other MCP servers. It connects to `mcp_index` for discovery and manages server lifecycles locally via ZMQ-based IPC.
 
 ```
 LLM Client (Claude/Cline)
     │ MCP Protocol
     ▼
 ┌─────────────────────────────┐
-│       mcp_runtime           │
+│        mcpruntime           │
 │    (FastMCP MCP Server)     │
 ├─────────────────────────────┤
 │  Discovery → mcp_index API  │
