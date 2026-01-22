@@ -151,10 +151,11 @@ OPERATIONS & PARAMETERS:
   No parameters required
   Get total counts of servers and tools from the discovery service
 
-WORKFLOW:
-1. DISCOVER: search_tools(query) → find relevant tools
-2. EXPLORE: get_server_info(server) → understand capabilities
-3. UNDERSTAND: get_tool_details(server, tool) → get full schema
+WORKFLOW (Progressive Disclosure Pattern):
+This staged workflow minimizes token usage - load details only when needed.
+1. DISCOVER: search_tools(query) → lightweight metadata (~100 tokens/tool)
+2. EXPLORE: get_server_info(server) → capabilities summary
+3. UNDERSTAND: get_tool_details(server, tool) → full schema (only when needed)
 4. START: manage_server(server, 'start') → start the server
 5. EXECUTE: execute_tool(server, tool, args) → run the tool
 6. CLEANUP: manage_server(server, 'shutdown') → stop when done
