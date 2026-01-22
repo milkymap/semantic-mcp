@@ -1,6 +1,6 @@
 {
   "name": "mcp_runtime",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Execution and lifecycle management layer for MCP servers - connects to mcp_index for discovery, dynamically starts/stops servers, routes tool calls via ZeroMQ",
   "status": "production-ready",
   "features": [
@@ -43,6 +43,12 @@
     {
       "id": 7,
       "description": "npm stdout silencing for clean stdio transport",
+      "status": "complete",
+      "priority": 1
+    },
+    {
+      "id": 8,
+      "description": "Single semantic_router metatool pattern (12 operations in one unified interface)",
       "status": "complete",
       "priority": 1
     }

@@ -1,6 +1,7 @@
 import click
 
-from .mcp_server import mcp
+from .settings import RuntimeSettings
+from .mcp_server import MCPServer
 
 
 @click.group()
@@ -15,10 +16,9 @@ def cli():
 @click.option("--port", default=8001, type=int)
 def serve(transport: str, host: str, port: int):
     """Start the MCP runtime server"""
-    if transport == "stdio":
-        mcp.run()
-    else:
-        mcp.run(transport=transport, host=host, port=port)
+    settings = RuntimeSettings()
+    mcp_server = MCPServer(settings)
+    mcp_server.run(transport=transport, host=host, port=port)
 
 
 def main():
