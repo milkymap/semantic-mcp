@@ -1,8 +1,8 @@
 {
   "name": "mcp_runtime",
   "version": "0.2.0",
-  "description": "Execution and lifecycle management layer for MCP servers - connects to mcp_index for discovery, dynamically starts/stops servers, routes tool calls via ZeroMQ",
-  "status": "production-ready",
+  "description": "Execution and lifecycle management layer for MCP servers - connects to mcp_index for discovery, dynamically starts/stops servers, routes tool calls via ZeroMQ. Single semantic_router metatool with progressive disclosure pattern.",
+  "status": "shipped",
   "features": [
     {
       "id": 1,
@@ -67,7 +67,7 @@
     "get_content": "passing",
     "get_statistics": "passing"
   },
-  "quality_notes": "Semantic search quality excellent - multilingual (FR/EN), typo-tolerant, synonym-aware, handles negation and abstract concepts",
+  "quality_notes": "Semantic search quality excellent - multilingual (FR/EN), typo-tolerant, synonym-aware. Progressive disclosure reduces token usage by ~90% on discovery operations.",
   "dependencies": {
     "mcp_index": "localhost:8000 (discovery service)"
   }

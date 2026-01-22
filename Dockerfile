@@ -29,4 +29,6 @@ RUN uv venv && uv sync --frozen
 
 EXPOSE 8001
 
-CMD ["uv", "run", "mcp-runtime", "serve", "--transport", "streamable-http", "--port", "8001"]
+ENTRYPOINT ["uv", "run", "mcp-runtime"]
+
+CMD ["--help"]
