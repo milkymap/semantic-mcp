@@ -96,90 +96,60 @@ class MCPServer:
             description=f"""
 Universal gateway to the MCP Runtime ecosystem. Execute any MCP operation through a single unified interface.
 
-OPERATIONS & PARAMETERS:
+DESIGN: Progressive disclosure - lightweight metadata first (~30-40 tokens/item), full details only when needed. This prevents context bloat when orchestrating across many servers/tools.
 
-- search_tools
-  Required: query
-  Optional: limit, min_score, server_names, tool_type, enabled
-  Discover tools using natural language queries with semantic ranking
+OPERATIONS BY PURPOSE:
 
-- search_servers
-  Required: query
-  Optional: limit, min_score
-  Search for servers using natural language queries
+Discovery (lightweight):
+- search_tools: query → {{tools: [{{name, serverName, description, title, score}}]}}
+- search_servers: query → {{servers: [{{name, title, nbTools, score}}]}}
+- list_servers: → {{servers: [{{name, title, nbTools}}]}}
+- get_server_tools: server_name → {{tools: [{{name, serverName, description, title}}]}}
+- get_statistics: → {{total_servers, total_tools}}
 
-- get_server_info
-  Required: server_name
-  View detailed server capabilities, limitations, and tool count
+Exploration (full details):
+- get_server_info: server_name → {{server_name, title, summary, capabilities, limitations, nb_tools}}
+- get_tool_details: server_name, tool_name → {{tool_name, tool_description, tool_schema, server_name}}
 
-- get_server_tools
-  Required: server_name
-  Optional: limit, offset
-  List all tools available on a specific server (lightweight, no schemas)
+Lifecycle:
+- manage_server: server_name, action('start'|'shutdown') → {{success, message}}
+- list_running_servers: → {{running_servers: [names]}}
 
-- get_tool_details
-  Required: server_name, tool_name
-  Get complete tool schema and description before execution
+Execution:
+- execute_tool: server_name, tool_name, [arguments, timeout, in_background, priority] → result or task_id
+- poll_task_result: task_id → {{status: 'running'|'completed'|'error', result?}}
+- get_content: ref_id, [chunk_index] → content (chunk_index is 0-based)
 
-- list_servers
-  Optional: limit, offset
-  List all registered servers with pagination
+CHOOSING THE RIGHT SEARCH:
+- Know what you want to DO? → search_tools("send email")
+- Know what SERVICE you need? → search_servers("database backend")
+- Exploring blind? → list_servers, then get_server_tools(server)
 
-- manage_server
-  Required: server_name, action
-  Start or shutdown MCP server sessions (action: 'start' or 'shutdown')
+WORKFLOW:
+1. DISCOVER: search_tools(query) → lightweight results
+2. UNDERSTAND: get_tool_details(server, tool) → full schema (required before execution!)
+3. START: manage_server(server, 'start')
+4. EXECUTE: execute_tool(server, tool, arguments)
+5. CLEANUP: manage_server(server, 'shutdown')
 
-- list_running_servers
-  No parameters required
-  Show currently active server sessions ready for tool execution
+BACKGROUND EXECUTION:
+- Use in_background=true for long-running tools
+- Returns task_id immediately
+- Poll with poll_task_result(task_id) until status='completed'
+- Status values: 'running', 'completed', 'error'
 
-- execute_tool
-  Required: server_name, tool_name
-  Optional: arguments, timeout, in_background, priority
-  Run tools on active servers with optional background execution support
+CONTENT OFFLOADING:
+- Large results (>4000 tokens) are automatically chunked
+- Response shows: [Reference: uuid] with chunk count
+- Retrieve with get_content(ref_id, chunk_index=0) - index is 0-based
+- Iterate chunk_index from 0 to total_chunks-1
 
-- poll_task_result
-  Required: task_id
-  Check status and retrieve results of background tasks
+ERROR HANDLING:
+- Server not running? → manage_server(server, 'start') first
+- Invalid server/tool? → Check spelling against list_servers/get_server_tools
+- Execution fails? → Error message in response with details
 
-- get_content
-  Required: ref_id
-  Optional: chunk_index
-  Retrieve offloaded content (large text chunks, images) by reference ID
-
-- get_statistics
-  No parameters required
-  Get total counts of servers and tools from the discovery service
-
-WORKFLOW (Progressive Disclosure Pattern):
-This staged workflow minimizes token usage - load details only when needed.
-1. DISCOVER: search_tools(query) → lightweight metadata (~100 tokens/tool)
-2. EXPLORE: get_server_info(server) → capabilities summary
-3. UNDERSTAND: get_tool_details(server, tool) → full schema (only when needed)
-4. START: manage_server(server, 'start') → start the server
-5. EXECUTE: execute_tool(server, tool, args) → run the tool
-6. CLEANUP: manage_server(server, 'shutdown') → stop when done
-
-BEST PRACTICES:
-1. ALWAYS use get_tool_details before execute_tool - never execute without checking the schema first!
-2. PREFER search_tools over list_servers for discovery - it's more efficient and finds relevant tools faster
-3. START with search_tools to discover what you need - don't browse blindly through all tools
-4. VERIFY server is running with list_running_servers before execute_tool, or start it with manage_server
-5. FOR background tasks: always save the task_id and poll with poll_task_result to get results
-6. CHECK server capabilities with get_server_info to understand limitations before heavy usage
-7. FOR search: write clear, descriptive queries with full context (e.g., "tools for reading PDF documents")
-8. ONLY 'operation' parameter is required. Other parameters depend on the chosen operation.
-9. WHEN tool results show [Reference: ref_id], use get_content to retrieve full content. For chunked text, use chunk_index.
-
-CONTENT RULES:
-- Large tool results are automatically offloaded and replaced with references
-- When you see [Reference: uuid], use get_content(ref_id="uuid") to retrieve
-- For chunked text, use chunk_index parameter to retrieve specific chunks
-- Images are stored as base64, retrievable via get_content
-
------------------------
-LIST OF INDEXED SERVERS
------------------------
+INDEXED SERVERS:
 {indexed_servers_msg}
 """
         )
