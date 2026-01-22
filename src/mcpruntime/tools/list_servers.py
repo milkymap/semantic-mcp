@@ -1,9 +1,19 @@
 import json
+from typing import List
 
 from fastmcp.tools.tool import ToolResult
 from mcp.types import TextContent
 
 from ..runtime_engine import RuntimeEngine
+
+
+def _minimize_server_response(servers: List[dict]) -> List[dict]:
+    """Keep only essential fields to reduce context size"""
+    essential_fields = {"name", "title", "nbTools"}
+    return [
+        {k: v for k, v in server.items() if k in essential_fields}
+        for server in servers
+    ]
 
 
 class ListServersTool:
@@ -16,6 +26,9 @@ class ListServersTool:
                 limit=limit,
                 offset=offset
             )
+
+            if "servers" in result:
+                result["servers"] = _minimize_server_response(result["servers"])
 
             servers_count = len(result.get("servers", []))
             result_text = f"Listed {servers_count} servers"
