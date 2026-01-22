@@ -8,9 +8,9 @@ from ..runtime_engine import RuntimeEngine
 
 
 def _strip_tool_schema(tools: List[dict]) -> List[dict]:
-    """Remove tool_schema from tool list to reduce context size"""
+    """Remove tool schema from tool list to reduce context size"""
     return [
-        {k: v for k, v in tool.items() if k != "tool_schema"}
+        {k: v for k, v in tool.items() if k not in ("tool_schema", "inputSchema")}
         for tool in tools
     ]
 
