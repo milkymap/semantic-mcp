@@ -7,10 +7,11 @@ from mcp.types import TextContent
 from ..runtime_engine import RuntimeEngine
 
 
-def _strip_tool_schema(tools: List[dict]) -> List[dict]:
-    """Remove tool schema from tool list to reduce context size"""
+def _minimize_tool_response(tools: List[dict]) -> List[dict]:
+    """Keep only essential fields to reduce context size"""
+    essential_fields = {"name", "serverName", "description", "title", "score"}
     return [
-        {k: v for k, v in tool.items() if k not in ("tool_schema", "inputSchema")}
+        {k: v for k, v in tool.items() if k in essential_fields}
         for tool in tools
     ]
 
@@ -38,7 +39,7 @@ class SearchToolsTool:
                 enabled=enabled
             )
             if "tools" in result:
-                result["tools"] = _strip_tool_schema(result["tools"])
+                result["tools"] = _minimize_tool_response(result["tools"])
 
             result_text = f"Found {len(result.get('tools', []))} tools for query: '{query}'"
             if tool_type:
