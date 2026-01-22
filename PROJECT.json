@@ -51,6 +51,30 @@
       "description": "Single semantic_router metatool pattern (12 operations in one unified interface)",
       "status": "complete",
       "priority": 1
+    },
+    {
+      "id": 9,
+      "description": "Early validation for background tasks (check server running before queuing)",
+      "status": "pending",
+      "priority": 3
+    },
+    {
+      "id": 10,
+      "description": "Separate 'failed' status for poll_task_result (distinct from 'error')",
+      "status": "pending",
+      "priority": 3
+    },
+    {
+      "id": 11,
+      "description": "cancel_task operation to abort queued/running background tasks",
+      "status": "pending",
+      "priority": 3
+    },
+    {
+      "id": 12,
+      "description": "list_tasks operation to see all pending/running background tasks",
+      "status": "pending",
+      "priority": 3
     }
   ],
   "tested": {
