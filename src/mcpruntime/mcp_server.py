@@ -63,9 +63,9 @@ class MCPServer:
             indexed_servers = []
             for server in servers_info.get("servers", []):
                 item = {
-                    "server_name": server.get("server_name"),
+                    "server_name": server.get("name"),
                     "title": server.get("title"),
-                    "nb_tools": server.get("nb_tools", 0)
+                    "nb_tools": server.get("nbTools", 0)
                 }
                 indexed_servers.append(yaml.dump(item, sort_keys=False))
 
