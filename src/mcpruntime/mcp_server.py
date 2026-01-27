@@ -20,6 +20,8 @@ from .tools import (
     ListRunningServersTool,
     ExecuteToolTool,
     PollTaskResultTool,
+    CancelTaskTool,
+    ListTasksTool,
     GetContentTool,
     GetStatisticsTool,
 )
@@ -87,6 +89,8 @@ class MCPServer:
         self.list_running_servers = ListRunningServersTool(self.runtime_engine)
         self.execute_tool = ExecuteToolTool(self.runtime_engine)
         self.poll_task_result = PollTaskResultTool(self.runtime_engine)
+        self.cancel_task = CancelTaskTool(self.runtime_engine)
+        self.list_tasks = ListTasksTool(self.runtime_engine)
         self.get_content = GetContentTool(self.runtime_engine.content_manager)
         self.get_statistics = GetStatisticsTool(self.runtime_engine)
 
@@ -117,7 +121,9 @@ Lifecycle:
 
 Execution:
 - execute_tool: server_name, tool_name, [arguments, timeout, in_background, priority] → result or task_id
-- poll_task_result: task_id → {{status: 'running'|'completed'|'error', result?}}
+- poll_task_result: task_id → {{status: 'running'|'completed'|'failed'|'not_found', result?}}
+- cancel_task: task_id → {{success, message}} - cancel a running background task
+- list_tasks: → {{tasks: [{{task_id, status}}]}} - list all background tasks
 - get_content: ref_id, [chunk_index] → content (chunk_index is 0-based)
 
 CHOOSING THE RIGHT SEARCH:
@@ -136,7 +142,7 @@ BACKGROUND EXECUTION:
 - Use in_background=true for long-running tools
 - Returns task_id immediately
 - Poll with poll_task_result(task_id) until status='completed'
-- Status values: 'running', 'completed', 'error'
+- Status values: 'running', 'completed', 'failed', 'not_found'
 
 CONTENT OFFLOADING:
 - Large results (>4000 tokens) are automatically chunked
@@ -166,6 +172,8 @@ INDEXED SERVERS:
                     "list_running_servers",
                     "execute_tool",
                     "poll_task_result",
+                    "cancel_task",
+                    "list_tasks",
                     "get_content",
                     "get_statistics"
                 ],
@@ -290,6 +298,16 @@ INDEXED SERVERS:
                                 content=[TextContent(type="text", text="Error: 'task_id' is required for poll_task_result")]
                             )
                         return await self.poll_task_result(task_id=task_id)
+
+                    case "cancel_task":
+                        if task_id is None:
+                            return ToolResult(
+                                content=[TextContent(type="text", text="Error: 'task_id' is required for cancel_task")]
+                            )
+                        return await self.cancel_task(task_id=task_id)
+
+                    case "list_tasks":
+                        return await self.list_tasks()
 
                     case "get_content":
                         if ref_id is None:

@@ -10,6 +10,8 @@ from .manage_server import ManageServerTool
 from .list_running import ListRunningServersTool
 from .execute_tool import ExecuteToolTool
 from .poll_task import PollTaskResultTool
+from .cancel_task import CancelTaskTool
+from .list_tasks import ListTasksTool
 from .get_content import GetContentTool
 from .get_statistics import GetStatisticsTool
 
@@ -24,6 +26,8 @@ __all__ = [
     "ListRunningServersTool",
     "ExecuteToolTool",
     "PollTaskResultTool",
+    "CancelTaskTool",
+    "ListTasksTool",
     "GetContentTool",
     "GetStatisticsTool",
 ]

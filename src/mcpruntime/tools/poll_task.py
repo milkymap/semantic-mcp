@@ -12,14 +12,25 @@ class PollTaskResultTool:
 
     async def __call__(self, task_id: str) -> ToolResult:
         try:
-            is_done, result, error = await self.engine.poll_task_result(task_id)
+            status, result, error = await self.engine.poll_task_result(task_id)
 
-            if error:
+            if status == "not_found":
                 return ToolResult(
-                    content=[TextContent(type="text", text=f"Task error: {error}")]
+                    content=[
+                        TextContent(type="text", text=f"Task '{task_id}' not found"),
+                        TextContent(type="text", text=json.dumps({"status": "not_found", "error": error}, indent=2))
+                    ]
                 )
 
-            if is_done:
+            if status == "failed":
+                return ToolResult(
+                    content=[
+                        TextContent(type="text", text=f"Task '{task_id}' failed"),
+                        TextContent(type="text", text=json.dumps({"status": "failed", "error": error}, indent=2))
+                    ]
+                )
+
+            if status == "completed":
                 return ToolResult(
                     content=[
                         TextContent(type="text", text=f"Task '{task_id}' completed"),
@@ -27,6 +38,7 @@ class PollTaskResultTool:
                     ]
                 )
 
+            # status == "running"
             return ToolResult(
                 content=[
                     TextContent(type="text", text=f"Task '{task_id}' still running"),

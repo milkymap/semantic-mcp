@@ -108,14 +108,24 @@ class RuntimeEngine:
                 task = await self.priority_queue.get()
                 priority, (server_name, tool_name, arguments, timeout, task_id) = task
                 logger.info(f"Processing task {task_id}: {tool_name}@{server_name}")
-                task_handler = asyncio.create_task(
-                    self._handle_tool_call(
-                        server_name=server_name,
-                        tool_name=tool_name,
-                        arguments=arguments,
-                        timeout=timeout
+
+                # Early validation: check server is still running before processing
+                server_task = self.mcp_server_tasks.get(server_name)
+                if not server_task or "RUNNING" not in server_task.get_name():
+                    logger.warning(f"Task {task_id}: Server '{server_name}' no longer running, marking as failed")
+                    # Create a failed task that raises immediately
+                    async def failed_task():
+                        raise Exception(f"Server '{server_name}' is no longer running")
+                    task_handler = asyncio.create_task(failed_task())
+                else:
+                    task_handler = asyncio.create_task(
+                        self._handle_tool_call(
+                            server_name=server_name,
+                            tool_name=tool_name,
+                            arguments=arguments,
+                            timeout=timeout
+                        )
                     )
-                )
                 self.background_tasks[task_id] = task_handler
                 with suppress(Exception):
                     await task_handler
@@ -302,22 +312,65 @@ class RuntimeEngine:
         result = await self._handle_tool_call(server_name, tool_name, arguments, timeout)
         return await self.content_manager.process_content(result)
 
-    async def poll_task_result(self, task_id: str) -> Tuple[bool, Optional[List[Dict]], Optional[str]]:
+    async def poll_task_result(self, task_id: str) -> Tuple[str, Optional[List[Dict]], Optional[str]]:
+        """
+        Poll for background task result.
+
+        Returns:
+            Tuple of (status, result, error) where status is one of:
+            - "running": task is still executing
+            - "completed": task finished successfully, result contains output
+            - "failed": task finished with an exception, error contains message
+            - "not_found": task_id does not exist
+        """
         task = self.background_tasks.get(task_id)
         if not task:
-            return False, None, f"Task not found: {task_id}"
+            return "not_found", None, f"Task not found: {task_id}"
 
         if not task.done():
-            return False, None, None
+            return "running", None, None
 
         try:
             result = task.result()
             del self.background_tasks[task_id]
             processed = await self.content_manager.process_content(result)
-            return True, processed, None
+            return "completed", processed, None
         except Exception as e:
             del self.background_tasks[task_id]
-            return False, None, str(e)
+            return "failed", None, str(e)
 
     def list_running_servers(self) -> List[str]:
         return list(self.mcp_server_tasks.keys())
+
+    async def cancel_task(self, task_id: str) -> Tuple[bool, str]:
+        """Cancel a running background task by its ID."""
+        task = self.background_tasks.get(task_id)
+        if not task:
+            return False, f"Task not found: {task_id}"
+
+        if task.done():
+            return False, f"Task '{task_id}' already completed"
+
+        try:
+            task.cancel()
+            await asyncio.sleep(0)  # Allow cancellation to propagate
+            del self.background_tasks[task_id]
+            return True, f"Task '{task_id}' cancelled"
+        except Exception as e:
+            return False, f"Failed to cancel task: {str(e)}"
+
+    def list_tasks(self) -> List[Dict]:
+        """List all background tasks with their status."""
+        tasks = []
+        for task_id, task in self.background_tasks.items():
+            if task.done():
+                if task.cancelled():
+                    status = "cancelled"
+                elif task.exception():
+                    status = "failed"
+                else:
+                    status = "completed"
+            else:
+                status = "running"
+            tasks.append({"task_id": task_id, "status": status})
+        return tasks
