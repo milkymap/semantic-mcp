@@ -55,25 +55,25 @@
     {
       "id": 9,
       "description": "Early validation for background tasks (check server running before queuing)",
-      "status": "pending",
+      "status": "complete",
       "priority": 3
     },
     {
       "id": 10,
       "description": "Separate 'failed' status for poll_task_result (distinct from 'error')",
-      "status": "pending",
+      "status": "complete",
       "priority": 3
     },
     {
       "id": 11,
       "description": "cancel_task operation to abort queued/running background tasks",
-      "status": "pending",
+      "status": "complete",
       "priority": 3
     },
     {
       "id": 12,
       "description": "list_tasks operation to see all pending/running background tasks",
-      "status": "pending",
+      "status": "complete",
       "priority": 3
     }
   ],
@@ -89,7 +89,9 @@
     "list_running_servers": "passing",
     "poll_task_result": "passing",
     "get_content": "passing",
-    "get_statistics": "passing"
+    "get_statistics": "passing",
+    "cancel_task": "untested",
+    "list_tasks": "untested"
   },
   "quality_notes": "Semantic search quality excellent - multilingual (FR/EN), typo-tolerant, synonym-aware. Progressive disclosure reduces token usage by ~90% on discovery operations.",
   "dependencies": {
