@@ -90,8 +90,8 @@
     "poll_task_result": "passing",
     "get_content": "passing",
     "get_statistics": "passing",
-    "cancel_task": "untested",
-    "list_tasks": "untested"
+    "cancel_task": "passing",
+    "list_tasks": "passing"
   },
   "quality_notes": "Semantic search quality excellent - multilingual (FR/EN), typo-tolerant, synonym-aware. Progressive disclosure reduces token usage by ~90% on discovery operations.",
   "dependencies": {
