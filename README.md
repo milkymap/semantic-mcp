@@ -17,14 +17,18 @@ LLM Client (Claude/Cline)
 │       semantic-mcp          │
 │    (FastMCP MCP Server)     │
 ├─────────────────────────────┤
-│  Discovery → Semantic API   │
+│  Discovery → mcp-index API  │
 │  Execution → ZMQ + Sessions │
 └─────────────────────────────┘
     │               │
     ▼               ▼
-Discovery       MCP Servers
-Service         (stdio/http)
+mcp-index       MCP Servers
+(Elasticsearch) (stdio/http)
 ```
+
+## Related Projects
+
+- **[mcp-index](https://github.com/milkymap/mcp-index)** - Elasticsearch-based semantic discovery service for MCP servers. Required backend for `semantic-mcp` to enable semantic search and server registry.
 
 ## Installation
 
