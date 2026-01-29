@@ -62,8 +62,8 @@ docker run -d \
 ### Option 4: From source
 
 ```bash
-git clone https://github.com/milkymap/mcp_runtime
-cd mcp_runtime
+git clone https://github.com/milkymap/semantic-mcp
+cd semantic-mcp
 uv sync
 uv run semantic-mcp serve
 ```
