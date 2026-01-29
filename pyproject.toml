@@ -1,6 +1,6 @@
 [project]
 name = "semantic-mcp"
-version = "0.2.0"
+version = "0.2.1"
 description = "Semantic router for MCP ecosystems - Discover, manage, and execute tools across multiple MCP servers with progressive disclosure"
 readme = "README.md"
 license = { text = "MIT" }
@@ -30,9 +30,9 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/milkymap/mcp_runtime"
-Repository = "https://github.com/milkymap/mcp_runtime"
-Issues = "https://github.com/milkymap/mcp_runtime/issues"
+Homepage = "https://github.com/milkymap/semantic-mcp"
+Repository = "https://github.com/milkymap/semantic-mcp"
+Issues = "https://github.com/milkymap/semantic-mcp/issues"
 
 [project.scripts]
 semantic-mcp = "semantic_mcp.main:main"
