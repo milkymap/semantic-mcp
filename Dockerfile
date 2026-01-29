@@ -29,6 +29,6 @@ RUN uv venv && uv sync --frozen
 
 EXPOSE 8001
 
-ENTRYPOINT ["uv", "run", "mcp-runtime"]
+ENTRYPOINT ["uv", "run", "semantic-mcp"]
 
 CMD ["--help"]
